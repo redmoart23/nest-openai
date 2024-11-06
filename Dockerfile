@@ -1,30 +1,23 @@
-# Stage 1: Build the application
-FROM node:20 AS builder
+# Use the official Node.js image as the base image
+FROM node:20-alpine
 
-# Set working directory
+# Set the working directory to /app
 WORKDIR /app
 
-# Install dependencies
+# Copy the package.json and package-lock.json files
 COPY package*.json ./
-RUN npm install --only=production
+
+# Install the dependencies
+RUN npm ci
+
+# Copy the NestJS application code
 COPY . .
 
 # Build the NestJS application
 RUN npm run build
 
-# Stage 2: Create the production image
-FROM node:20-alpine
-
-# Set working directory
-WORKDIR /app
-
-# Copy dependencies from the build stage
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-
-# Set environment variables
-ENV NODE_ENV=production
+# Expose the port that the NestJS application will run on
 EXPOSE 3000
 
-# Run the application
-CMD ["node", "dist/main"]
+# Start the NestJS application
+CMD ["npm", "run", "start:prod"]
