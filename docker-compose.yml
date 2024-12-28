@@ -1,0 +1,10 @@
+services:
+  nest-gpt:
+    build: ./
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
